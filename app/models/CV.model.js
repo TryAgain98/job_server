@@ -12,6 +12,24 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.STRING,
         unique: true,
       },
+      display_name: {
+        type: DataTypes.STRING
+      },
+      email: {
+        type: DataTypes.STRING
+      },
+      phone: {
+        type: DataTypes.STRING
+      },
+      birthday: {
+        type: DataTypes.BIGINT
+      },
+      gender: {
+        type: DataTypes.STRING
+      },
+      avatar: {
+        type: DataTypes.STRING
+      },
       height: {
         type: DataTypes.STRING,
       },
@@ -37,7 +55,7 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       home_town: { 
-        type: DataTypes.BIGINT,
+        type: DataTypes.STRING,
       },
       educational_level: {
         type: DataTypes.STRING,

@@ -15,12 +15,6 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
       display_name: {
         type: DataTypes.STRING
       },
-      email: {
-        type: DataTypes.STRING
-      },
-      phone: {
-        type: DataTypes.STRING
-      },
       birthday: {
         type: DataTypes.BIGINT
       },

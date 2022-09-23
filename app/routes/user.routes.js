@@ -7,6 +7,7 @@ module.exports = function (app) {
   router.get("/", controller.findAll)
   router.get("/getForSelector", controller.getForSelector)
 
+  router.post("/", controller.create);
   //api/teachers/3
   router.get("/:id", controller.findOne)
 

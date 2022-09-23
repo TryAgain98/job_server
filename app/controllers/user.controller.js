@@ -6,6 +6,17 @@ const { getPagination, getPagingData } = require("../helpers/pagination")
 const { messageError } = require("../helpers/messageError")
 const bcrypt = require("bcryptjs")
 
+exports.create = (req, res) => {
+  User.create(req.body)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      messageError(res, err)
+    });
+};
+
+
 exports.updatePassWord = async (req, res) => {
   let { userId, oldPass, newPass } = req.body
   var user = await User.findOne({

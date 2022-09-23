@@ -41,6 +41,9 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         work_address: {
           type: DataTypes.TEXT,
         },
+        level: {
+          type: DataTypes.TEXT
+        },
         start_time: {
           type: DataTypes.BIGINT,
         },
