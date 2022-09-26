@@ -33,8 +33,9 @@ db.user = require("./user.model.js")(sequelize, Sequelize, DataTypes)
 // db.notification =  require("./notification.model.js")(sequelize, Sequelize, DataTypes)
 db.career = require("./career.model.js")(sequelize, Sequelize, DataTypes)
 db.company = require("./company.model.js")(sequelize, Sequelize, DataTypes)
-db.CV = require("./CV.model.js")(sequelize, Sequelize, DataTypes)
+db.CV = require("./cv.model.js")(sequelize, Sequelize, DataTypes)
 db.job = require("./job.model.js")(sequelize, Sequelize, DataTypes)
+db.job_cv = require("./jov_cv.model.js")(sequelize, Sequelize, DataTypes)
 
 //reference user and cv
 db.user.hasMany(db.CV)
@@ -48,9 +49,12 @@ db.job.belongsTo(db.career)
 //reference job and company
 db.company.hasMany(db.job)
 db.job.belongsTo(db.company)
-//reference job and cv
-// db.cv.hasMany(db.job)
-// db.job.hasMany(db.cv)
+//reference job_cv and cv
+db.CV.hasMany(db.job_cv)
+db.job_cv.belongsTo(db.CV)
+//reference job_cv and job
+db.job.hasMany(db.job_cv)
+db.job_cv.belongsTo(db.job)
 
 //reference work_hour_type and timekeeping
 // db.work_hour_type.hasMany(db.timekeeping)

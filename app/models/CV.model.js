@@ -1,12 +1,13 @@
 module.exports = (sequelize, Sequelize, DataTypes) => {
   const CV = sequelize.define(
-    "CV", // Model name
+    "cv", // Model name
     {
       // Attributes
       id: {
-        type: DataTypes.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
       title: {
         type: DataTypes.STRING,

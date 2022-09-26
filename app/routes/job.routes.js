@@ -14,6 +14,10 @@ module.exports = app => {
     router.delete("/:id", controller.delete);
   
     router.delete("/", controller.deleteAll);
+
+    router.post("/applied", controller.appliedJob);
+    
+    router.post("/saved", controller.savedJob)
   
     app.use("/api/job", router);
   };
