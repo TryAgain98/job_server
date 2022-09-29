@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize, DataTypes) => {
-  const JobCV = sequelize.define(
-    "job_cv", // Model name
+  const AppliedJob = sequelize.define(
+    "applied_job", // Model name
     {
       // Attributes
       id: {
@@ -9,14 +9,13 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
         allowNull: false,
         autoIncrement: true,
       },
-      saved_job: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      applied_job: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
+      introducing_letter: {
+        type: DataTypes.TEXT
+      }
+      // applied: {
+      //   type: DataTypes.BOOLEAN,
+      //   defaultValue: false,
+      // },
     },
     {
       // Options
@@ -27,5 +26,5 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
     }
   );
 
-  return JobCV;
+  return AppliedJob;
 };

@@ -7,7 +7,7 @@ module.exports = app => {
   
     router.get("/", controller.findAll);
 
-    router.get("/:id", controller.findOne);
+    router.get("/details/:id", controller.findOne);
   
     router.put("/:id", controller.update);
   
@@ -17,7 +17,11 @@ module.exports = app => {
 
     router.post("/applied", controller.appliedJob);
     
-    router.post("/saved", controller.savedJob)
+    router.post("/saved", controller.savedJob);
+
+    router.get("/applied", controller.getListJobApplied);
+    
+    router.get("/saved", controller.getListJobSaved)
   
     app.use("/api/job", router);
   };

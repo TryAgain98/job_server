@@ -1,6 +1,8 @@
 const db = require("../models");
 const Job = db.job;
-const JobCV = db.job_cv;
+const CV = db.CV;
+const SavedJob = db.saved_job;
+const AppliedJob = db.applied_job;
 const Op = db.Op;
 const { getPagination, getPagingData } = require("../helpers/pagination");
 const { messageError } = require("../helpers/messageError");
@@ -17,25 +19,35 @@ exports.create = (req, res) => {
 
 exports.appliedJob = async (req, res) => {
   try {
-    const { cvId, jobId, saved_job, applied_job } = req.body;
-    const jobCV = await JobCV.findOne({
+    const { cvId, jobId } = req.body;
+    const cv = await CV.findOne({
+      where: { id: cvId },
+    });
+    const job = await Job.findOne({
+      where: { id: jobId },
+    });
+    if (!cv) {
+      res.status(500).send({
+        message: "CV not found",
+      });
+    }
+    if (!job) {
+      res.status(500).send({
+        message: "job not found",
+      });
+    }
+    const appliedJob = await AppliedJob.findOne({
       where: {
         cvId,
         jobId,
       },
     });
-    if (!!jobCV) {
-      await JobCV.update(
-        { cvId, jobId, applied_job },
-        {
-          where: { id: jobCV?.id },
-        }
-      );
-      return res.send("Job applied successfully.");
+    if (!!appliedJob) {
+      return res.send("This job has already been applied.");
     }
-    const data = await JobCV.create({ ...req.body });
+    const data = await AppliedJob.create({ ...req.body });
     if (data) {
-      res.send(data);
+      return res.send("Job applied successfully.");
     }
   } catch (err) {
     messageError(res, err);
@@ -43,26 +55,51 @@ exports.appliedJob = async (req, res) => {
 };
 exports.savedJob = async (req, res) => {
   try {
-    const { cvId, jobId, saved_job, applied_job } = req.body;
-    const jobCV = await JobCV.findOne({
+    const { userId, jobId, isSave } = req.body;
+    const job = await Job.findOne({
       where: {
-        cvId,
+        id: jobId,
+      },
+    });
+    const user = await db.user.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!job) {
+      res.status(500).send({
+        message: "job not found",
+      });
+    }
+    if (!user) {
+      res.status(500).send({
+        message: "user not found",
+      });
+    }
+    const savedJob = await SavedJob.findOne({
+      where: {
+        userId,
         jobId,
       },
     });
-    if (!!jobCV) {
-      await JobCV.update(
-        { cvId, jobId, saved_job },
-        {
-          where: { id: jobCV?.id },
-        }
-      );
-      res.send("Job saved successfully.");
+    if (!savedJob && !isSave) {
+      res.send({
+        message: "This job has not been saved.",
+      });
     }
-    else {
-      const data = await JobCV.create({ ...req.body });
+    if (!!savedJob) {
+      if (isSave) {
+        return res.send("This job has already been saved.");
+      } else {
+        await SavedJob.destroy({
+          where: { id: savedJob.id },
+        });
+        return res.send("This job has been removed from the save list.");
+      }
+    } else {
+      const data = await SavedJob.create({ ...req.body });
       if (data) {
-        res.send(data);
+        res.send("Job saved successfully.");
       }
     }
   } catch (err) {
@@ -70,8 +107,8 @@ exports.savedJob = async (req, res) => {
   }
 };
 
-exports.findAll = (req, res) => {
-  const { page, size, search, careerId } = req.query;
+exports.findAll = async (req, res) => {
+  const { page, size, search, careerId, userId } = req.query;
   const { limit, offset } = getPagination(page, size);
 
   var condition = [];
@@ -102,7 +139,95 @@ exports.findAll = (req, res) => {
     });
   }
 
-  Job.findAndCountAll({ where: { [Op.or]: condition }, limit, offset })
+  Job.findAndCountAll({
+    where: { [Op.or]: condition },
+    include: [
+      {
+        model: db.applied_job,
+        attributes: ["cvId"],
+        include: {
+          model: db.CV,
+          attributes: ["userId"],
+        },
+      },
+    ],
+    limit,
+    offset,
+  })
+    .then((data) => {
+      const response = getPagingData(data, page, limit);
+      let formatData = [];
+      if (Array.isArray(response.items)) {
+        formatData = response.items.map((job) => {
+          // let isApply = false;
+          // for (const applied_job of job.applied_jobs) {
+          //   if(applied_job.cv.userId === userId) {
+          //     isApply = true;
+          //   }
+          // }
+          // console.log("===================", JSON.stringify({
+          //   ...job,
+          //   isApply: isApply
+          // }))
+          return job.get({
+            applied_jobs: true,
+            isApply: true,
+          });
+        });
+      }
+      res.send({ ...response, items: formatData });
+    })
+    .catch((err) => {
+      messageError(res, err);
+    });
+};
+
+exports.getListJobSaved = async (req, res) => {
+  const { page, size, userId } = req.query;
+  const { limit, offset } = getPagination(page, size);
+
+  Job.findAndCountAll({
+    include: [
+      {
+        model: db.saved_job,
+        where: {
+          userId,
+        },
+      },
+    ],
+    limit,
+    offset,
+  })
+    .then((data) => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch((err) => {
+      messageError(res, err);
+    });
+};
+
+exports.getListJobApplied = async (req, res) => {
+  const { page, size, userId } = req.query;
+  const { limit, offset } = getPagination(page, size);
+
+  Job.findAndCountAll({
+    include: [
+      {
+        model: db.applied_job,
+        attributes: ["cvId"],
+        include: {
+          model: db.CV,
+          attributes: ["userId"],
+          where: {
+            userId
+          }
+        },
+      },
+    ],
+    limit,
+    offset,
+  })
     .then((data) => {
       const response = getPagingData(data, page, limit);
       res.send(response);
@@ -122,7 +247,7 @@ exports.findOne = (req, res) => {
       },
       {
         model: db.career,
-      },
+      }
     ],
     where: { id: id },
   })

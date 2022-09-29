@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize, DataTypes) => {
-    const Notification = sequelize.define(
-      "notifications", // Model name
+    const SavedJob = sequelize.define(
+      "saved_job", // Model name
       {
         // Attributes
         id: {
@@ -9,25 +9,20 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
           allowNull: false,
           autoIncrement: true,
         },
-        type: {
-          type: DataTypes.BIGINT
-        },
-        read: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        content: {
-          type: DataTypes.STRING
-        }
+        // saved: {
+        //   type: DataTypes.BOOLEAN,
+        //   defaultValue: false,
+        // }
       },
       {
         // Options
         timestamps: true,
         underscrored: true,
         createdAt: "created_at",
-        updatedAt: "updated_at"
+        updatedAt: "updated_at",
       }
     );
-    return Notification;
+  
+    return SavedJob;
   };
   

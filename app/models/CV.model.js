@@ -11,7 +11,6 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
       },
       title: {
         type: DataTypes.STRING,
-        unique: true,
       },
       display_name: {
         type: DataTypes.STRING

@@ -37,7 +37,6 @@ const db = require("./app/models")
 const Career = db.career;
 const Company = db.company;
 const Job = db.job;
-const WorkHourType = db.work_hour_type;
 db.sequelize.sync().then(() => {
   initial() // Just use it in development, at the first time execution!. Delete it in production
 })
@@ -63,8 +62,6 @@ app.use(function (req, res, next) {
 require("./app/routes/auth.routes")(app)
 require("./app/routes/user.routes")(app)
 // require("./app/routes/role.routes")(app)
-require("./app/routes/timekeeping.routes")(app)
-require("./app/routes/notification.routes")(app)
 require("./app/routes/career.routes")(app)
 require("./app/routes/job.routes")(app)
 require("./app/routes/cv.routes")(app)
