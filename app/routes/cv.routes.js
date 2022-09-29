@@ -7,7 +7,6 @@ module.exports = app => {
   
     router.get("/", controller.findAll);
 
-    //api/teachers/3
     router.get("/:id", controller.findOne);
   
     router.put("/:id", controller.update);
@@ -15,6 +14,8 @@ module.exports = app => {
     router.delete("/:id", controller.delete);
   
     router.delete("/", controller.deleteAll);
+
+    router.post("/addPrimaryCV", controller.addPrimaryCV);
   
     app.use("/api/cv", router);
   };

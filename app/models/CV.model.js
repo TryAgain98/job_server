@@ -87,6 +87,10 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
       certificate_photo: {
         type: DataTypes.STRING,
       },
+      is_primary: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      }
     },
     {
       // Options

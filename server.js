@@ -40,7 +40,7 @@ const Career = db.career;
 const Company = db.company;
 const Job = db.job;
 db.sequelize.sync().then(() => {
-  initial(); // Just use it in development, at the first time execution!. Delete it in production
+  // initial();
 });
 
 app.post("/uploads", upload.single("image"), function (req, res, next) {

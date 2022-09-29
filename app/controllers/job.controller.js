@@ -27,12 +27,12 @@ exports.appliedJob = async (req, res) => {
       where: { id: jobId },
     });
     if (!cv) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "CV not found",
       });
     }
     if (!job) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "job not found",
       });
     }
@@ -67,12 +67,12 @@ exports.savedJob = async (req, res) => {
       },
     });
     if (!job) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "job not found",
       });
     }
     if (!user) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "user not found",
       });
     }
@@ -83,7 +83,7 @@ exports.savedJob = async (req, res) => {
       },
     });
     if (!savedJob && !isSave) {
-      res.send({
+      return res.send({
         message: "This job has not been saved.",
       });
     }
