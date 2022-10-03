@@ -78,17 +78,17 @@ server.listen(PORT, () => {
 
 function initial() {
   // //add data for table career
-  mockCareer.forEach((element) => {
+  mockCareer.careers.forEach((element) => {
     Career.create(element);
   });
  
   // // add data for table company
-  mockCompany.forEach((element) => {
+  mockCompany.companies.forEach((element) => {
     Company.create(element);
   });
 
   // // Add data for table job
-  mockJob.forEach((element) => {
+  mockJob.jobs.forEach((element) => {
     Job.create(element);
   });
 }

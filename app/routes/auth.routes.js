@@ -13,7 +13,7 @@ module.exports = function (app) {
 
   app.post(
     "/api/user/signup",
-    [verifySignUp.checkDuplicatePhoneOrEmail],
+    // [verifySignUp.checkDuplicatePhoneOrEmail],
     controller.signup
   );
 

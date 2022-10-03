@@ -4,11 +4,11 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
     {
       // Attributes
       id: {
-        type: DataTypes.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        primaryKey: true
+        type: DataTypes.STRING,
+        primaryKey: true,
+        unique: true
       },
-      uuid: {
+      email: {
         type: DataTypes.STRING,
         unique: true
       },
@@ -26,7 +26,7 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING
-      }
+      },
     },
     {
       // Options
