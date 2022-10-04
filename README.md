@@ -5,8 +5,8 @@
 1. Clone this repository
 
    ```bash
-   git clone https://github.com/TryAgain98/timekeeping.git
-   cd timekeeping
+   git clone https://github.com/TryAgain98/job_server
+   cd job_server
    ```
 
 2. Install the npm packages
