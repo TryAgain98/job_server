@@ -1,3 +1,4 @@
+const { authJwt } = require("../middlewares");
 module.exports = app => {
     const controller = require("../controllers/career.controller.js");
   
@@ -5,7 +6,7 @@ module.exports = app => {
   
     router.post("/", controller.create);
   
-    router.get("/", controller.findAll);
+    router.get("/", controller.getAll);
 
     router.get("/:id", controller.findOne);
   
@@ -15,6 +16,6 @@ module.exports = app => {
   
     router.delete("/", controller.deleteAll);
   
-    app.use("/api/career", router);
+    app.use("/api/career", [authJwt.verifyToken], router);
   };
   

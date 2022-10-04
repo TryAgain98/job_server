@@ -1,3 +1,4 @@
+const { authJwt } = require("../middlewares");
 module.exports = app => {
     const controller = require("../controllers/cv.controller.js");
   
@@ -17,6 +18,6 @@ module.exports = app => {
 
     router.post("/addPrimaryCV", controller.addPrimaryCV);
   
-    app.use("/api/cv", router);
+    app.use("/api/cv", [authJwt.verifyToken], router);
   };
   

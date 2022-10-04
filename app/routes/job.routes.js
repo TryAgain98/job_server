@@ -1,3 +1,4 @@
+const { authJwt } = require("../middlewares");
 module.exports = app => {
     const controller = require("../controllers/job.controller.js");
   
@@ -23,6 +24,6 @@ module.exports = app => {
     
     router.get("/saved", controller.getListJobSaved)
   
-    app.use("/api/job", router);
+    app.use("/api/job",[authJwt.verifyToken], router);
   };
   

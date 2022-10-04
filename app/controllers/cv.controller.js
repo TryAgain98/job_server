@@ -15,7 +15,8 @@ exports.create = (req, res) => {
 };
 
 exports.addPrimaryCV = async (req, res) => {
-  const { userId, cvId } = req.body;
+  const { cvId } = req.body;
+  const {userId} = req;
   const user = await db.user.findOne({
     where: {
       id: userId,
@@ -61,7 +62,8 @@ exports.addPrimaryCV = async (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  const { name, userId } = req.query;
+  const { name } = req.query;
+  const {userId} = req
   const { page, size } = req.query;
   const { limit, offset } = getPagination(page, size);
 

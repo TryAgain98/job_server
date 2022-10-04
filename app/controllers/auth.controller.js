@@ -6,6 +6,7 @@ const User = db.user;
 const Role = db.role;
 const Op = db.Op;
 const axios = require("axios");
+const { messageError } = require("../helpers/messageError");
 
 const signUpFromOtherService = async (req, res) => {
   const { account, hash } = req.body;
@@ -51,73 +52,46 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signIn = async (req, res) => {
-  const tokenPushNoti = req.body.tokenPushNoti;
-  User.findOne({
-    include: [
-      {
-        model: db.role,
-      },
-    ],
-    where: {
-      phone: req.body.phone,
-    },
-  })
-    .then(async (user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
-
-      let passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
-
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!",
-        });
-      }
-      let token = jwt.sign(
-        { id: user.id, isAdmin: user.Role.is_admin },
-        config.auth.secret,
-        {
-          expiresIn: "60d", // 24 hours
-        }
-      );
-      if (user.hasOwnProperty("password")) {
-        delete user.password;
-      }
-
-      // update token notification
-      await User.update(
-        {
-          token_notification: tokenPushNoti,
-        },
-        {
-          where: { id: user.id },
-        }
-      );
-
-      res.status(200).send({
-        user: user,
-        accessToken: token,
-      });
-      // });
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
+const signInFromOtherService = async (req, res) => {
+  const { account, hash } = req.body;
+  try {
+    const response = await axios.post("https://cvnl.me/uuid/v1/user/hash", {
+      account,
+      hash,
     });
+    const { data } = response;
+    return data;
+  } catch (err) {
+    messageError(res, err);
+  }
 };
 
-exports.signOut = (req, res) => {
-  const { token } = req.body;
-  console.log("signOut : ", token);
-  if (token) {
-    jwt.destroy(token);
-    res.send({ message: "Remove token done" });
-  } else {
-    res.send.status(500)({ message: "null token" });
+exports.signIn = async (req, res) => {
+  try {
+    const { account, hash } = req.body;
+    const response = await signInFromOtherService(req, res);
+    if (response.error) {
+      return res.status(500).send({
+        message: "Incorrect account or password",
+      });
+    }
+    const { _id } = response.data.userInfo;
+    var user = await User.findOne({
+      where: { id: _id },
+    });
+    if (!user) {
+      return res.status(500).send({
+        message: "User not found",
+      });
+    }
+    let token = jwt.sign({ id: user.id }, config.auth.secret, {
+      expiresIn: "60d",
+    });
+    res.status(200).send({
+      user,
+      token,
+    });
+  } catch (err) {
+    messageError(res, err);
   }
 };

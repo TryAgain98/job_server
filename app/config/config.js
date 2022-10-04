@@ -22,6 +22,6 @@ module.exports = {
 
   /** AUTH KEY */
   auth: {
-    secret: "timekeeping"
+    secret: process.env.secret || "HVKTMM"
   }
 };

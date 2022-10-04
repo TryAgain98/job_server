@@ -55,7 +55,9 @@ exports.appliedJob = async (req, res) => {
 };
 exports.savedJob = async (req, res) => {
   try {
-    const { userId, jobId, isSave } = req.body;
+    const { jobId, isSave } = req.body;
+    const { userId } = req;
+    console.log({userId})
     const job = await Job.findOne({
       where: {
         id: jobId,
@@ -97,7 +99,7 @@ exports.savedJob = async (req, res) => {
         return res.send("This job has been removed from the save list.");
       }
     } else {
-      const data = await SavedJob.create({ ...req.body });
+      const data = await SavedJob.create({ ...req.body, userId });
       if (data) {
         res.send("Job saved successfully.");
       }
@@ -183,7 +185,8 @@ exports.findAll = async (req, res) => {
 };
 
 exports.getListJobSaved = async (req, res) => {
-  const { page, size, userId } = req.query;
+  const { page, size } = req.query;
+  const {userId} = req
   const { limit, offset } = getPagination(page, size);
 
   Job.findAndCountAll({
@@ -208,7 +211,8 @@ exports.getListJobSaved = async (req, res) => {
 };
 
 exports.getListJobApplied = async (req, res) => {
-  const { page, size, userId } = req.query;
+  const { page, size } = req.query;
+  const {userId} = req
   const { limit, offset } = getPagination(page, size);
 
   Job.findAndCountAll({

@@ -116,8 +116,9 @@ exports.getForSelector = (req, res) => {
 
 exports.findOne = (req, res) => {
   const id = req.params.id
+  const {userId} = req
 
-  User.findByPk(id)
+  User.findByPk(userId)
     .then(data => {
       res.send(data)
     })
@@ -134,14 +135,11 @@ exports.getByUserId = async (id) => {
 
 exports.update = (req, res) => {
   const id = req.params.id
-  // let {display_name, email, phone, birthday, gender, avatar, address, RoleId} = req.body
-  // if (req.body.hasOwnProperty('password')) {
-  //   newUser.password = bcrypt.hashSync(req.body.password, 8)
-  // }
+  const {userId} = req
   User.update({
     ... req.body
   }, {
-    where: { id: id }
+    where: { id: userId }
   })
     .then(num => {
       if (num == 1) {

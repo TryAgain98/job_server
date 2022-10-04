@@ -28,25 +28,23 @@ verifyToken = (req, res, next) => {
       });
     }
     req.userId = decoded.id;
-    req.isAdmin = decoded.isAdmin;
 
     next();
   });
 };
 
-isAdmin = (req, res, next) => {
-  if(!req.isAdmin) {
-    res.status(403).send({
-      message: "Require Admin Role!"
-    });
-    return;
-  }
-  next()
-};
+// isAdmin = (req, res, next) => {
+//   if(!req.isAdmin) {
+//     res.status(403).send({
+//       message: "Require Admin Role!"
+//     });
+//     return;
+//   }
+//   next()
+// };
 
 const authJwt = {
-  verifyToken,
-  isAdmin
+  verifyToken
 };
 
 module.exports = authJwt;

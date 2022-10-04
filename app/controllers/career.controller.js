@@ -31,6 +31,21 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.getAll = (req, res) => {
+  const name = req.query.name;
+
+  var condition = name ? { name: { [Op.like]: '%' + name + '%' } } : null;
+
+  Career.findAll({ where: condition})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      messageError(res, err)
+    });
+};
+
+
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
