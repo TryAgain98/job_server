@@ -19,7 +19,8 @@ const corsOptions = {
   origin: "http://localhost:4200",
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
+app.options('*', cors());
 
 //setup firebase
 var serviceAccount = require("./schedule-a4483-firebase-adminsdk-yd7mw-878f756725.json");
