@@ -57,7 +57,6 @@ exports.savedJob = async (req, res) => {
   try {
     const { jobId, isSave } = req.body;
     const { userId } = req;
-    console.log({userId})
     const job = await Job.findOne({
       where: {
         id: jobId,
@@ -110,7 +109,8 @@ exports.savedJob = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const { page, size, search, careerId, userId } = req.query;
+  const { page, size, search, careerId } = req.query;
+  const {userId} = req;
   const { limit, offset } = getPagination(page, size);
 
   var condition = [];
@@ -144,40 +144,35 @@ exports.findAll = async (req, res) => {
   Job.findAndCountAll({
     where: { [Op.or]: condition },
     include: [
-      {
-        model: db.applied_job,
-        attributes: ["cvId"],
-        include: {
-          model: db.CV,
-          attributes: ["userId"],
-        },
-      },
     ],
     limit,
     offset,
   })
-    .then((data) => {
+    .then(async(data) => {
       const response = getPagingData(data, page, limit);
-      let formatData = [];
-      if (Array.isArray(response.items)) {
-        formatData = response.items.map((job) => {
-          // let isApply = false;
-          // for (const applied_job of job.applied_jobs) {
-          //   if(applied_job.cv.userId === userId) {
-          //     isApply = true;
-          //   }
-          // }
-          // console.log("===================", JSON.stringify({
-          //   ...job,
-          //   isApply: isApply
-          // }))
-          return job.get({
-            applied_jobs: true,
-            isApply: true,
+      let formatData = JSON.parse(JSON.stringify(response));
+      let formatItems = formatData.items;
+      if(Array.isArray(formatItems)) {
+        for (let job of formatItems) {
+          const applied_job = await db.applied_job.findOne({
+            include: [
+              {
+                model: db.CV,
+                where: { userId },
+              },
+            ],
+            where: {
+              jobId: job.id,
+            },
           });
-        });
+          const saved_job = await db.saved_job.findOne({
+            where: { userId, jobId: job.id },
+          });
+          job.applied_job = !!applied_job;
+          job.saved_job = !!saved_job;
+        }
       }
-      res.send({ ...response, items: formatData });
+      res.send(formatData);
     })
     .catch((err) => {
       messageError(res, err);
@@ -186,7 +181,7 @@ exports.findAll = async (req, res) => {
 
 exports.getListJobSaved = async (req, res) => {
   const { page, size } = req.query;
-  const {userId} = req
+  const { userId } = req;
   const { limit, offset } = getPagination(page, size);
 
   Job.findAndCountAll({
@@ -212,7 +207,7 @@ exports.getListJobSaved = async (req, res) => {
 
 exports.getListJobApplied = async (req, res) => {
   const { page, size } = req.query;
-  const {userId} = req
+  const { userId } = req;
   const { limit, offset } = getPagination(page, size);
 
   Job.findAndCountAll({
@@ -224,8 +219,8 @@ exports.getListJobApplied = async (req, res) => {
           model: db.CV,
           attributes: ["userId"],
           where: {
-            userId
-          }
+            userId,
+          },
         },
       },
     ],
@@ -241,8 +236,9 @@ exports.getListJobApplied = async (req, res) => {
     });
 };
 
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
+  const { userId } = req;
 
   Job.findOne({
     include: [
@@ -251,17 +247,36 @@ exports.findOne = (req, res) => {
       },
       {
         model: db.career,
-      }
+      },
     ],
     where: { id: id },
   })
-    .then((data) => {
-      res.send(data);
+    .then(async (data) => {
+      const applied_job = await db.applied_job.findOne({
+        include: [
+          {
+            model: db.CV,
+            where: { userId },
+          },
+        ],
+        where: {
+          jobId: data.id,
+        },
+      });
+      const saved_job = await db.saved_job.findOne({
+        where: { userId, jobId: data.id },
+      });
+      let formatData = JSON.parse(JSON.stringify(data));
+      formatData = {
+        ...formatData,
+        applied_job: !!applied_job,
+        saved_job: !!saved_job,
+      };
+
+      res.json(formatData);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: `Error retrieving Job with id = ${id}`,
-      });
+      messageError(res, err);
     });
 };
 
@@ -307,9 +322,7 @@ exports.delete = (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Could not delete Job with id=" + id,
-      });
+      messageError(res, err);
     });
 };
 
