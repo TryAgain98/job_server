@@ -40,7 +40,7 @@ const Career = db.career;
 const Company = db.company;
 const Job = db.job;
 db.sequelize.sync().then(() => {
-  initial();
+  // initial();
 });
 
 app.post("/uploads", upload.single("image"), function (req, res, next) {
@@ -65,7 +65,6 @@ app.use(function (req, res, next) {
 // api routes
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
-// require("./app/routes/role.routes")(app)
 require("./app/routes/career.routes")(app);
 require("./app/routes/job.routes")(app);
 require("./app/routes/cv.routes")(app);
