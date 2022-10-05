@@ -36,10 +36,10 @@
     "nodemailer": "^6.6.0",
     "pusher": "^5.0.0",
     "sequelize": "^5.3.5",
-    "socket.io": "^4.1.2"
-  },
-  "devDependencies": {
+    "socket.io": "^4.1.2",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.16"
+  },
+  "devDependencies": {
   }
 }
