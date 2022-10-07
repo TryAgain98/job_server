@@ -140,9 +140,8 @@ exports.findAll = async (req, res) => {
       careerId: Number(careerId),
     });
   }
-
   Job.findAndCountAll({
-    where: { [Op.or]: condition },
+    where: condition.length > 0 ? { [Op.or]: condition } : {},
     include: [
     ],
     limit,
